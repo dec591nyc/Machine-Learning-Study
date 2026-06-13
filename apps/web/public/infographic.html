@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台灣產業十大機器學習模型實務選擇指南 | ML Model Selection Guide</title>
+  <meta name="description" content="提供台灣主流業界（半導體高科技製造、智慧醫療、金融科技、房地產估價、智慧零售）十大機器學習模型實務指南與資訊圖表儀表板。">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Outfit & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* Force exact print colors for high-fidelity PDF outputs */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+      background-color: #f8fafc;
+      /* Grid paper background effect for precision/technical look */
+      background-image: radial-gradient(rgba(148, 163, 184, 0.04) 1.2px, transparent 1.2px);
+      background-size: 16px 16px;
+      color: #0f172a;
+    }
+
+    /* Print styling strictly optimized for single A4 portrait page */
+    @page {
+      size: A4 portrait;
+      margin: 0 !important;
+    }
+
+    @media print {
+      html, body {
+        background-color: #ffffff !important;
+        background-image: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 0 !important;
+        max-height: 297mm !important;
+        overflow: hidden !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .print-container {
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 0 !important;
+        max-height: 297mm !important;
+        padding: 8mm 10mm !important;
+        box-sizing: border-box !important;
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+        border-radius: 0 !important;
+      }
+
+      /* Ensure everything stays on one page */
+      .page-break-prevent {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+
+    /* Glow highlights for interaction */
+    .glow-pink {
+      box-shadow: 0 0 15px rgba(236, 72, 153, 0.2);
+      border-color: rgba(236, 72, 153, 0.8) !important;
+    }
+
+    .glow-cyan {
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+      border-color: rgba(6, 182, 212, 0.8) !important;
+    }
+
+    .glow-green {
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.8) !important;
+    }
+
+    .glow-purple {
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.8) !important;
+    }
+
+    .glow-orange {
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.2);
+      border-color: rgba(249, 115, 22, 0.8) !important;
+    }
+
+    /* Smooth transition */
+    .transition-all-custom {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+
+<body class="p-4 md:p-8">
+
+  <!-- Action Toolbar (Theme Toggle & Print) - SCREEN ONLY -->
+  <div
+    class="max-w-[1000px] mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm no-print">
+    <!-- View Switcher -->
+    <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+      <button id="btn-flow" onclick="switchView('flow')"
+        class="px-4 py-2 rounded-lg text-sm font-bold transition-all-custom text-white bg-slate-900 shadow-sm">
+        🌿 流程決策視圖
+      </button>
+      <button id="btn-compare" onclick="switchView('compare')"
+        class="px-4 py-2 rounded-lg text-sm font-bold transition-all-custom text-slate-600 hover:text-slate-900">
+        📊 維度對比視圖
+      </button>
+    </div>
+
+    <!-- PDF Actions -->
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="text-xs text-slate-500">💡 建議：點擊按鈕，在列印設定中啟用「背景圖形」以獲得最佳 A4 質感</span>
+      <button onclick="window.print()"
+        class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition-all-custom hover:scale-[1.02]">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+          </path>
+        </svg>
+        儲存/列印 PDF 海報
+      </button>
+    </div>
+  </div>
+
+  <!-- A4 Infographic Print Container -->
+  <!-- Target size: A4 proportion: 794px by 1123px (matches 210mm x 297mm) -->
+  <div
+    class="print-container max-w-[840px] min-h-[1140px] mx-auto bg-white border border-slate-200 rounded-[32px] shadow-lg p-6 md:p-8 flex flex-col justify-between relative overflow-hidden">
+
+    <!-- Top Decorative Line -->
+    <div
+      class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-pink-500 via-cyan-500 via-emerald-500 via-violet-500 to-orange-500">
+    </div>
+
+    <!-- Header Block -->
+    <div class="border-b border-slate-100 pb-4 mb-4">
+      <div class="flex justify-between items-start">
+        <div>
+          <div
+            class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 mb-1">
+            <svg class="w-3.5 h-3.5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="6" cy="12" r="2" fill="currentColor"></circle>
+              <circle cx="14" cy="6" r="2" fill="currentColor"></circle>
+              <circle cx="14" cy="18" r="2" fill="currentColor"></circle>
+              <circle cx="22" cy="12" r="2" fill="currentColor"></circle>
+              <line x1="8" y1="11.5" x2="12" y2="7.5"></line>
+              <line x1="8" y1="12.5" x2="12" y2="16.5"></line>
+              <line x1="16" y1="7.5" x2="20" y2="11.5"></line>
+              <line x1="16" y1="16.5" x2="20" y2="12.5"></line>
+              <line x1="14" y1="8" x2="14" y2="16" stroke-dasharray="2,2"></line>
+            </svg>
+            Practical Machine Learning Toolbox
+          </div>
+          <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-slate-900">
+            台灣產業十大機器學習模型實務選擇指南
+          </h1>
+          <p class="text-[11px] md:text-xs font-medium text-slate-500 mt-0.5">
+            Practical ML Model Selection Matrix & Decision Pipeline for Industry Understanding
+          </p>
+        </div>
+
+        <!-- Target Badge Legends (Screen Only, prints cleanly as mini-info) -->
+        <div class="text-right flex flex-col items-end gap-1">
+          <div class="text-[10px] font-bold text-slate-400">指標分類圖例</div>
+          <div class="flex flex-wrap gap-1 justify-end max-w-[200px]">
+            <span class="px-1.5 py-0.5 rounded text-[8px] font-black bg-pink-50 text-pink-600 border border-pink-100">📈 數值預測</span>
+            <span class="px-1.5 py-0.5 rounded text-[8px] font-black bg-cyan-50 text-cyan-600 border border-cyan-100">🎯 分類標籤</span>
+            <span
+              class="px-1.5 py-0.5 rounded text-[8px] font-black bg-emerald-50 text-emerald-600 border border-emerald-100">🫧 自動分群</span>
+            <span
+              class="px-1.5 py-0.5 rounded text-[8px] font-black bg-violet-50 text-violet-600 border border-violet-100">🗜️ 特徵降維</span>
+            <span
+              class="px-1.5 py-0.5 rounded text-[8px] font-black bg-orange-50 text-orange-600 border border-orange-100">🧠 深度學習</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONCEPT A: FLOW-BASED DECISION MATRIX VIEW -->
+    <div id="flow-view" class="flex-1 flex flex-col justify-between">
+
+      <!-- SVG Flow Navigator Section -->
+      <div
+        class="relative w-full h-[220px] bg-slate-50/50 rounded-2xl border border-slate-100 p-3 flex flex-col justify-between overflow-hidden">
+
+        <!-- Background Grid Gridlines -->
+        <div class="absolute inset-0"
+          style="background-image: radial-gradient(rgba(148, 163, 184, 0.02) 1px, transparent 1px); background-size: 10px 10px;">
+        </div>
+
+        <!-- SVG Connector Lines (Curve paths) -->
+        <svg class="absolute inset-0 w-full h-full pointer-events-none" id="flow-svg" viewBox="0 0 800 220" preserveAspectRatio="none">
+          <!-- Main Trunk Lines -->
+          <!-- 🩷 Predict (Pink) -->
+          <path id="path-1" d="M 400,30 C 400,60 80,60 80,95" fill="none" stroke="#f472b6" stroke-width="2.5"
+            stroke-dasharray="4,2" />
+          <!-- 🩵 Classify (Cyan) -->
+          <path id="path-2" d="M 400,30 C 400,60 300,60 300,95" fill="none" stroke="#22d3ee" stroke-width="2.5" />
+          <!-- 💚 Group (Green) -->
+          <path id="path-3" d="M 400,30 C 400,60 560,60 560,95" fill="none" stroke="#34d399" stroke-width="2.5"
+            stroke-dasharray="4,2" />
+          <!-- 💜 Reduce (Purple) -->
+          <path id="path-4" d="M 400,30 C 400,60 640,60 640,95" fill="none" stroke="#a78bfa" stroke-width="2.5"
+            stroke-dasharray="4,2" />
+          <!-- 🧡 Neural/Deep (Orange) -->
+          <path id="path-5" d="M 400,30 C 400,60 744,60 744,95" fill="none" stroke="#fb923c" stroke-width="2.5" />
+
+          <!-- Sub-branches under Classify (Cyan) -->
+          <!-- To Logistic -->
+          <path id="path-sub-2-1" d="M 300,125 C 300,140 180,145 180,165" fill="none" stroke="#22d3ee"
+            stroke-width="1.5" />
+          <!-- To Decision Tree -->
+          <path id="path-sub-2-2" d="M 300,125 C 300,140 250,145 250,165" fill="none" stroke="#22d3ee"
+            stroke-width="1.5" />
+          <!-- To Random Forest -->
+          <path id="path-sub-2-3" d="M 300,125 C 300,140 310,145 310,165" fill="none" stroke="#22d3ee"
+            stroke-width="1.5" />
+          <!-- To SVM -->
+          <path id="path-sub-2-4" d="M 300,125 C 300,140 370,145 370,165" fill="none" stroke="#22d3ee"
+            stroke-width="1.5" />
+          <!-- To KNN -->
+          <path id="path-sub-2-5" d="M 300,125 C 300,140 430,145 430,165" fill="none" stroke="#22d3ee"
+            stroke-width="1.5" />
+          <!-- To Naive Bayes -->
+          <path id="path-sub-2-6" d="M 300,125 C 300,140 490,145 490,165" fill="none" stroke="#22d3ee"
+            stroke-width="1.5" />
+        </svg>
+
+        <!-- Root Node (Top) -->
+        <div style="position: absolute; left: 50%; top: 10px; transform: translateX(-50%);" class="z-10">
+          <div
+            class="px-4 py-1.5 rounded-full bg-slate-900 text-white font-extrabold text-[9px] tracking-wider uppercase border border-slate-700 shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+            你想解決什麼實務問題？ (Start Goal)
+          </div>
+        </div>
+
+        <!-- Layer 1: Core Use Case Branches (Level Y = 95px) -->
+        <!-- Predict Numbers -->
+        <div id="node-1" onclick="highlightModel('lr')" style="position: absolute; left: 10%; top: 95px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-2 py-1 rounded-lg bg-pink-50 border border-pink-200 text-pink-700 font-extrabold text-[9px] hover:scale-105 transition-all-custom text-center whitespace-nowrap shadow-sm">
+          📈 預測連續數值<br>(Predict Numbers)
+        </div>
+        <!-- Classify Labels -->
+        <div id="node-2" style="position: absolute; left: 37.5%; top: 95px; transform: translateX(-50%);"
+          class="z-10 px-2 py-1 rounded-lg bg-cyan-50 border border-cyan-200 text-cyan-700 font-extrabold text-[9px] text-center whitespace-nowrap shadow-sm">
+          🎯 分類預測標籤<br>(Classify Labels)
+        </div>
+        <!-- Group Data -->
+        <div id="node-3" onclick="highlightModel('kmeans')" style="position: absolute; left: 67%; top: 95px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 font-extrabold text-[9px] hover:scale-105 transition-all-custom text-center whitespace-nowrap shadow-sm">
+          🫧 自動資料分群<br>(Group Data)
+        </div>
+        <!-- Reduce Features -->
+        <div id="node-4" onclick="highlightModel('pca')" style="position: absolute; left: 80%; top: 95px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-2 py-1 rounded-lg bg-violet-50 border border-violet-200 text-violet-700 font-extrabold text-[9px] hover:scale-105 transition-all-custom text-center whitespace-nowrap shadow-sm">
+          🗜️ 特徵降維去噪<br>(Reduce Features)
+        </div>
+        <!-- Learn Patterns -->
+        <div id="node-5" onclick="highlightModel('nn')" style="position: absolute; left: 93%; top: 95px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-2 py-1 rounded-lg bg-orange-50 border border-orange-200 text-orange-700 font-extrabold text-[9px] hover:scale-105 transition-all-custom text-center whitespace-nowrap shadow-sm">
+          🧠 學習複雜非線性<br>(Learn Patterns)
+        </div>
+
+        <!-- Layer 2: Classify Sub-Decisions (Level Y = 165px) -->
+        <!-- Predict Numbers Label -->
+        <div style="position: absolute; left: 10%; top: 165px; transform: translateX(-50%);" class="text-[8px] font-bold text-pink-500/80 bg-white/80 px-1 py-0.5 rounded border border-pink-100 shadow-sm whitespace-nowrap z-10">
+          📏 線性擬合
+        </div>
+
+        <!-- Classifier decision pills -->
+        <div onclick="highlightModel('logr')" style="position: absolute; left: 22.5%; top: 165px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-1.5 py-1 rounded bg-white border border-cyan-100 hover:border-cyan-400 text-cyan-600 font-bold text-[7.5px] whitespace-nowrap text-center transition-all-custom shadow-sm">
+          法規合規/機率？
+        </div>
+        <div onclick="highlightModel('dt')" style="position: absolute; left: 31.25%; top: 165px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-1.5 py-1 rounded bg-white border border-cyan-100 hover:border-cyan-400 text-cyan-600 font-bold text-[7.5px] whitespace-nowrap text-center transition-all-custom shadow-sm">
+          需要直觀規則？
+        </div>
+        <div onclick="highlightModel('rf')" style="position: absolute; left: 38.75%; top: 165px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-1.5 py-1 rounded bg-white border border-cyan-100 hover:border-cyan-400 text-cyan-600 font-bold text-[7.5px] whitespace-nowrap text-center transition-all-custom shadow-sm">
+          高精非線性預測？
+        </div>
+        <div onclick="highlightModel('svm')" style="position: absolute; left: 46.25%; top: 165px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-1.5 py-1 rounded bg-white border border-cyan-100 hover:border-cyan-400 text-cyan-600 font-bold text-[7.5px] whitespace-nowrap text-center transition-all-custom shadow-sm">
+          高維/邊界最大？
+        </div>
+        <div onclick="highlightModel('knn')" style="position: absolute; left: 53.75%; top: 165px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-1.5 py-1 rounded bg-white border border-cyan-100 hover:border-cyan-400 text-cyan-600 font-bold text-[7.5px] whitespace-nowrap text-center transition-all-custom shadow-sm">
+          鄰居相似投票？
+        </div>
+        <div onclick="highlightModel('nb')" style="position: absolute; left: 61.25%; top: 165px; transform: translateX(-50%);"
+          class="z-10 cursor-pointer px-1.5 py-1 rounded bg-white border border-cyan-100 hover:border-cyan-400 text-cyan-600 font-bold text-[7.5px] whitespace-nowrap text-center transition-all-custom shadow-sm">
+          文字高維/極速？
+        </div>
+
+        <!-- Group Data Label -->
+        <div style="position: absolute; left: 70%; top: 165px; transform: translateX(-50%);" class="text-[8px] font-bold text-emerald-500/80 bg-white/80 px-1 py-0.5 rounded border border-emerald-100 shadow-sm whitespace-nowrap z-10">
+          🧲 質心凝聚
+        </div>
+        <!-- Reduction Label -->
+        <div style="position: absolute; left: 80%; top: 165px; transform: translateX(-50%);" class="text-[8px] font-bold text-violet-500/80 bg-white/80 px-1 py-0.5 rounded border border-violet-100 shadow-sm whitespace-nowrap z-10">
+          👤 投影降維
+        </div>
+        <!-- Deep Label -->
+        <div style="position: absolute; left: 93%; top: 165px; transform: translateX(-50%);" class="text-[8px] font-bold text-orange-500/80 bg-white/80 px-1 py-0.5 rounded border border-orange-100 shadow-sm whitespace-nowrap z-10">
+          ⚙️ 神經元網絡
+        </div>
+
+      </div>
+
+      <!-- Instruction Hint -->
+      <div class="text-[9px] font-bold text-center text-slate-400 mt-1.5 no-print">
+        ✨ 提示：點擊上方決策節點或下方模型卡片，對應路徑與內容即會高亮顯示。
+      </div>
+
+      <!-- Integrated Content Cards Layout (Grouped by Category Lanes) -->
+      <div class="flex-1 grid grid-cols-5 gap-3 mt-3">
+
+        <!-- Lane 1: 預測數值 (Pink Lane - 1 model) -->
+        <div
+          class="col-span-1 bg-pink-50/10 border border-pink-100/70 rounded-2xl p-2 flex flex-col justify-start gap-2">
+          <div class="text-[10px] font-extrabold text-pink-600 border-b border-pink-100/50 pb-1 mb-1">📈 預測連續數值</div>
+
+          <!-- Linear Regression -->
+          <div id="card-lr" onclick="highlightModel('lr')"
+            class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2.5 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <span
+                  class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-pink-50 text-pink-600 border border-pink-100">監督式</span>
+                <span class="text-[9px] font-bold text-slate-400">#01</span>
+              </div>
+              <h3 class="text-xs font-black text-slate-800">線性回歸<br><span
+                  class="text-[9px] font-normal text-slate-500">Linear Regression</span></h3>
+              <p class="text-[8.5px] text-slate-600 leading-tight mt-1.5">
+                擬合趨勢線以預測變數之間的連續數值關係。
+              </p>
+
+              <div class="mt-2.5 space-y-1">
+                <div class="text-[8px] font-bold text-pink-600">台灣產業實務案例</div>
+                <div class="text-[8.5px] text-slate-700 bg-pink-50/20 px-1.5 py-1 rounded">🏠 <b>信義房屋</b>：中古屋估價系統 AVM
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 border-t border-slate-100 pt-1.5">
+              <span class="text-[8.5px] font-bold text-pink-700 block">💡 使用情境</span>
+              <p class="text-[8px] text-slate-500 leading-snug">
+                快速建立連續數值預測 Baseline，且需要清晰可解釋的特徵權重係數。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lane 2: 分類標籤 (Cyan Lane - 6 models split in 2 columns of 3) -->
+        <div
+          class="col-span-2 bg-cyan-50/10 border border-cyan-100/70 rounded-2xl p-2 flex flex-col justify-start gap-2">
+          <div class="text-[10px] font-extrabold text-cyan-600 border-b border-cyan-100/50 pb-1 mb-1">🎯 分類與預測標籤</div>
+
+          <div class="grid grid-cols-2 gap-2 flex-1">
+
+            <!-- Column 1 of 2 -->
+            <div class="space-y-2 flex flex-col justify-between">
+
+              <!-- Logistic Regression -->
+              <div id="card-logr" onclick="highlightModel('logr')"
+                class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <span
+                      class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+                    <span class="text-[9px] font-bold text-slate-400">#02</span>
+                  </div>
+                  <h3 class="text-xs font-black text-slate-800">邏輯回歸<br><span
+                      class="text-[8px] font-normal text-slate-500">Logistic Regression</span></h3>
+                  <p class="text-[8px] text-slate-600 leading-tight mt-1">
+                    使用 S 型曲線預測二分類結果的機率值。
+                  </p>
+                  <div class="text-[7.5px] mt-1.5 leading-snug">
+                    <span class="text-cyan-600 font-bold block">台灣產業實務案例：</span>
+                    <div class="bg-cyan-50/20 px-1.5 py-1 rounded text-[8px] text-slate-700">💳 <b>國泰世華</b>信用卡盜刷預測</div>
+                  </div>
+                </div>
+                <div class="mt-1.5 border-t border-slate-100 pt-1 text-[7.5px] text-slate-500">
+                  <span class="text-cyan-700 font-bold">使用情境</span>：法規高度合規監管，要求可解釋的勝算比 (Odds Ratio)。
+                </div>
+              </div>
+
+              <!-- Decision Tree -->
+              <div id="card-dt" onclick="highlightModel('dt')"
+                class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <span
+                      class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+                    <span class="text-[9px] font-bold text-slate-400">#03</span>
+                  </div>
+                  <h3 class="text-xs font-black text-slate-800">決策樹<br><span
+                      class="text-[8px] font-normal text-slate-500">Decision Tree</span></h3>
+                  <p class="text-[8px] text-slate-600 leading-tight mt-1">
+                    依據特定規則進行分裂，形成樹狀決策路徑。
+                  </p>
+                  <div class="text-[7.5px] mt-1.5 leading-snug">
+                    <span class="text-cyan-600 font-bold block">台灣產業實務案例：</span>
+                    <div class="bg-cyan-50/20 px-1.5 py-1 rounded text-[8px] text-slate-700">🏭 <b>台積電</b>晶片良率分類檢測規則</div>
+                  </div>
+                </div>
+                <div class="mt-1.5 border-t border-slate-100 pt-1 text-[7.5px] text-slate-500">
+                  <span class="text-cyan-700 font-bold">使用情境</span>：決策邏輯必須轉換成直觀的 IF-THEN 人類可讀規則。
+                </div>
+              </div>
+
+              <!-- Random Forest -->
+              <div id="card-rf" onclick="highlightModel('rf')"
+                class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <span
+                      class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+                    <span class="text-[9px] font-bold text-slate-400">#04</span>
+                  </div>
+                  <h3 class="text-xs font-black text-slate-800">隨機森林<br><span
+                      class="text-[8px] font-normal text-slate-500">Random Forest</span></h3>
+                  <p class="text-[8px] text-slate-600 leading-tight mt-1">
+                    集結多棵獨立決策樹投票，以降低過擬合。
+                  </p>
+                  <div class="text-[7.5px] mt-1.5 leading-snug">
+                    <span class="text-cyan-600 font-bold block">台灣產業實務案例：</span>
+                    <div class="bg-cyan-50/20 px-1.5 py-1 rounded text-[8px] text-slate-700">🏥 <b>奇美醫院</b>急診轉 ICU 預警</div>
+                  </div>
+                </div>
+                <div class="mt-1.5 border-t border-slate-100 pt-1 text-[7.5px] text-slate-500">
+                  <span class="text-cyan-700 font-bold">使用情境</span>：表格數據有缺失值，需要穩定且強健的高精度 Baseline。
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Column 2 of 2 -->
+            <div class="space-y-2 flex flex-col justify-between">
+
+              <!-- SVM -->
+              <div id="card-svm" onclick="highlightModel('svm')"
+                class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <span
+                      class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+                    <span class="text-[9px] font-bold text-slate-400">#05</span>
+                  </div>
+                  <h3 class="text-xs font-black text-slate-800">支持向量機<br><span
+                      class="text-[8px] font-normal text-slate-500">SVM</span></h3>
+                  <p class="text-[8px] text-slate-600 leading-tight mt-1">
+                    在高維空間中，尋找最大間距分類界線。
+                  </p>
+                  <div class="text-[7.5px] mt-1.5 leading-snug">
+                    <span class="text-cyan-600 font-bold block">台灣產業實務案例：</span>
+                    <div class="bg-cyan-50/20 px-1.5 py-1 rounded text-[8px] text-slate-700">📶 <b>聯發科</b>晶片異常信號判定</div>
+                  </div>
+                </div>
+                <div class="mt-1.5 border-t border-slate-100 pt-1 text-[7.5px] text-slate-500">
+                  <span class="text-cyan-700 font-bold">使用情境</span>：特徵維度高（如文字、基因）、樣本量中等且界線清晰。
+                </div>
+              </div>
+
+              <!-- KNN -->
+              <div id="card-knn" onclick="highlightModel('knn')"
+                class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <span
+                      class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+                    <span class="text-[9px] font-bold text-slate-400">#06</span>
+                  </div>
+                  <h3 class="text-xs font-black text-slate-800">K-近鄰演算法<br><span
+                      class="text-[8px] font-normal text-slate-500">KNN</span></h3>
+                  <p class="text-[8px] text-slate-600 leading-tight mt-1">
+                    依據特徵空間中最鄰近的 K 個樣本投票。
+                  </p>
+                  <div class="text-[7.5px] mt-1.5 leading-snug">
+                    <span class="text-cyan-600 font-bold block">台灣產業實務案例：</span>
+                    <div class="bg-cyan-50/20 px-1.5 py-1 rounded text-[8px] text-slate-700">🛒 <b>momo購物</b>相似用戶購買推薦</div>
+                  </div>
+                </div>
+                <div class="mt-1.5 border-t border-slate-100 pt-1 text-[7.5px] text-slate-500">
+                  <span class="text-cyan-700 font-bold">使用情境</span>：特徵維度低且資料乾淨，希望基於鄰近歷史相似點預測。
+                </div>
+              </div>
+
+              <!-- Naive Bayes -->
+              <div id="card-nb" onclick="highlightModel('nb')"
+                class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <span
+                      class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+                    <span class="text-[9px] font-bold text-slate-400">#07</span>
+                  </div>
+                  <h3 class="text-xs font-black text-slate-800">單純貝氏<br><span
+                      class="text-[8px] font-normal text-slate-500">Naive Bayes</span></h3>
+                  <p class="text-[8px] text-slate-600 leading-tight mt-1">
+                    假設特徵皆獨立，基於貝氏機率公式分類。
+                  </p>
+                  <div class="text-[7.5px] mt-1.5 leading-snug">
+                    <span class="text-cyan-600 font-bold block">台灣產業實務案例：</span>
+                    <div class="bg-cyan-50/20 px-1.5 py-1 rounded text-[8px] text-slate-700">🛒 <b>PChome</b>客服信件分類分流</div>
+                  </div>
+                </div>
+                <div class="mt-1.5 border-t border-slate-100 pt-1 text-[7.5px] text-slate-500">
+                  <span class="text-cyan-700 font-bold">使用情境</span>：高維度單字特徵（如語意/文本分類），需要極快運算。
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Lane 3: 資料分群 (Green Lane - 1 model) -->
+        <div
+          class="col-span-1 bg-emerald-50/10 border border-emerald-100/70 rounded-2xl p-2 flex flex-col justify-start gap-2">
+          <div class="text-[10px] font-extrabold text-emerald-600 border-b border-emerald-100/50 pb-1 mb-1">🫧 自動資料分群</div>
+
+          <!-- K-Means -->
+          <div id="card-kmeans" onclick="highlightModel('kmeans')"
+            class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2.5 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <span
+                  class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">非監督式</span>
+                <span class="text-[9px] font-bold text-slate-400">#08</span>
+              </div>
+              <h3 class="text-xs font-black text-slate-800">K-Means 分群<br><span
+                  class="text-[9px] font-normal text-slate-500">K-Means Clustering</span></h3>
+              <p class="text-[8.5px] text-slate-600 leading-tight mt-1.5">
+                迭代優化樣本與 K 個中心點的距離進行分類。
+              </p>
+
+              <div class="mt-2.5 space-y-1">
+                <div class="text-[8px] font-bold text-emerald-600">台灣產業實務案例</div>
+                <div class="text-[8.5px] text-slate-700 bg-emerald-50/20 px-1.5 py-1 rounded">🏪
+                  <b>全家便利商店</b>：會員RFM消費畫像分群</div>
+              </div>
+            </div>
+
+            <div class="mt-3 border-t border-slate-100 pt-1.5">
+              <span class="text-[8.5px] font-bold text-emerald-700 block">💡 使用情境</span>
+              <p class="text-[8px] text-slate-500 leading-snug">
+                資料沒有標籤，需要自動發掘客群結構、定位特徵或進行商業劃分時。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lane 4: 特徵降維與模式 (Purple & Orange Lanes - 2 models in 1 combined column) -->
+        <div
+          class="col-span-1 bg-violet-50/10 border border-violet-100/70 rounded-2xl p-2 flex flex-col justify-start gap-2">
+          <div class="text-[10px] font-extrabold text-violet-600 border-b border-violet-100/50 pb-1 mb-1">🗜️ 降維 / 🧠 深度</div>
+
+          <div class="space-y-2 flex-1 flex flex-col justify-between">
+            <!-- PCA (Purple) -->
+            <div id="card-pca" onclick="highlightModel('pca')"
+              class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <span
+                    class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-violet-50 text-violet-600 border border-violet-100">非監督</span>
+                  <span class="text-[9px] font-bold text-slate-400">#09</span>
+                </div>
+                <h3 class="text-xs font-black text-slate-800">主成分分析 (PCA)<br><span
+                    class="text-[8px] font-normal text-slate-500">PCA</span></h3>
+                <p class="text-[7.5px] text-slate-600 leading-tight mt-1">
+                  將高維數據正交投影至變異數最大方向。
+                </p>
+                <div class="text-[7.5px] mt-1.5 leading-snug">
+                  <span class="text-violet-600 font-bold block">台灣產業實務案例：</span>
+                  <div class="bg-violet-50/20 px-1.5 py-1 rounded text-[8px] text-slate-700">🏭 <b>日月光</b>封裝SPC監控</div>
+                </div>
+              </div>
+              <div class="mt-1 border-t border-slate-100 pt-1 text-[7.5px] text-slate-500">
+                <span class="text-violet-700 font-bold">使用情境</span>：維度過多需要特徵壓縮、去噪或二/三維視覺化。
+              </div>
+            </div>
+
+            <!-- Neural Networks (Orange) -->
+            <div id="card-nn" onclick="highlightModel('nn')"
+              class="cursor-pointer bg-white border border-slate-200 rounded-xl p-2 flex-1 flex flex-col justify-between transition-all-custom hover:scale-[1.02] shadow-sm">
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <span
+                    class="px-1.5 py-0.5 rounded text-[7px] font-bold bg-orange-50 text-orange-600 border border-orange-100">深度學習</span>
+                  <span class="text-[9px] font-bold text-slate-400">#10</span>
+                </div>
+                <h3 class="text-xs font-black text-slate-800">類神經網路 / 深度學習<br><span
+                    class="text-[8px] font-normal text-slate-500">Neural Networks</span></h3>
+                <p class="text-[7.5px] text-slate-600 leading-tight mt-1">
+                  疊加多層神經元網絡，自動提取複雜高階特徵。
+                </p>
+                <div class="text-[7.5px] mt-1.5 leading-snug">
+                  <span class="text-orange-600 font-bold block">台灣產業實務案例：</span>
+                  <div class="bg-orange-50/20 px-1.5 py-1 rounded text-[8px] text-slate-700">🏥 <b>長庚醫院</b>眼底病變影像判讀</div>
+                </div>
+              </div>
+              <div class="mt-1 border-t border-slate-100 pt-1 text-[7.5px] text-slate-500">
+                <span class="text-orange-700 font-bold">使用情境</span>：非結構化影像/文本且擁有足夠算力 (GPU)。
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- CONCEPT B: LAYERED COMPARISON DASHBOARD VIEW (Hidden by default) -->
+    <div id="compare-view" class="hidden flex-1 flex flex-col justify-between">
+
+      <!-- Dashboard Table Headers (Concept B) -->
+      <div
+        class="grid grid-cols-12 gap-2 bg-slate-900 text-white font-extrabold text-[10px] tracking-wide rounded-xl p-3 mb-2 uppercase">
+        <div class="col-span-3">模型名稱 & 分群</div>
+        <div class="col-span-2">學習範式 / 演算法類型</div>
+        <div class="col-span-3">台灣 mainstream 業界核心應用場景</div>
+        <div class="col-span-2 text-center">可解釋性 vs 效能</div>
+        <div class="col-span-2">使用情境</div>
+      </div>
+
+      <!-- Layered Tracks (5 rows/layers) -->
+      <div class="space-y-2.5 flex-1">
+
+        <!-- Track 1: 預測數值層 (Regression) -->
+        <div
+          class="bg-pink-50/15 border-l-4 border-pink-500 rounded-r-xl p-2.5 grid grid-cols-12 gap-2 items-center text-[10.5px]">
+          <div class="col-span-3">
+            <span class="text-[8px] font-black uppercase text-pink-600 bg-pink-100/50 px-1.5 py-0.5 rounded">📈 數值預測</span>
+            <div class="font-extrabold text-slate-900 mt-1">1. 線性回歸</div>
+            <div class="text-[8.5px] text-slate-500 font-mono">Linear Regression</div>
+          </div>
+          <div class="col-span-2 text-slate-700 leading-tight">
+            <span
+              class="px-1 py-0.2 rounded text-[7px] font-bold bg-pink-50 text-pink-600 border border-pink-100">監督式</span>
+            <div class="mt-1 text-[9px] text-slate-500 font-semibold">線性擬合模型</div>
+          </div>
+          <div class="col-span-3 text-slate-700">
+            🏠 <b>信義房屋</b>：中古屋每坪單價評估 (結合坪數、捷運距離與地段特徵)
+          </div>
+          <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+            <div class="w-full">
+              <div class="flex justify-between text-[7px] font-bold text-slate-400"><span>解釋度</span><span>95%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-1">
+                <div class="bg-pink-500 h-1 rounded-full" style="width: 95%"></div>
+              </div>
+            </div>
+            <div class="w-full">
+              <div class="flex justify-between text-[7px] font-bold text-slate-400"><span>運算速</span><span>95%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-1">
+                <div class="bg-pink-400 h-1 rounded-full" style="width: 95%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-span-2 text-[9px] text-slate-600 bg-white/60 p-1.5 rounded border border-pink-100/50">
+            快速預測數值，且需明確知道各特徵欄位權重係數。
+          </div>
+        </div>
+
+        <!-- Track 2: 分類標籤層 (Classification) -->
+        <div class="bg-cyan-50/15 border-l-4 border-cyan-500 rounded-r-xl p-2.5 space-y-2">
+
+          <!-- Header for Classification -->
+          <div
+            class="text-[9px] font-extrabold text-cyan-600 uppercase tracking-wider border-b border-cyan-100/50 pb-1 flex justify-between">
+            <span>🎯 分類與預測標籤層 (Classification Layer)</span>
+            <span class="text-[7.5px] font-bold text-slate-400">涵蓋白盒、灰盒與高維邊界算法</span>
+          </div>
+
+          <!-- 2. Logistic Regression -->
+          <div class="grid grid-cols-12 gap-2 items-center text-[10px]">
+            <div class="col-span-3 font-extrabold text-slate-900 pl-2">2. 邏輯回歸 <span
+                class="font-mono text-[8px] text-slate-500 block">Logistic Regression</span></div>
+            <div class="col-span-2"><span
+                class="px-1 py-0.2 rounded text-[7px] bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+              <div class="text-[8.5px] mt-0.5 text-slate-500 font-semibold">機率二分類</div>
+            </div>
+            <div class="col-span-3 text-slate-700">💳 <b>國泰世華</b>：信用卡違約與盜刷風險機率預測</div>
+            <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-500 h-0.5 rounded-full" style="width: 90%"></div>
+                </div>
+              </div>
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-400 h-0.5 rounded-full" style="width: 90%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-2 text-[8.5px] text-slate-600 bg-white/60 p-1.5 rounded border border-cyan-100/50">
+              需要高合規性及輸出機率。</div>
+          </div>
+
+          <!-- 3. Decision Tree -->
+          <div class="grid grid-cols-12 gap-2 items-center text-[10px] border-t border-slate-100/50 pt-1.5">
+            <div class="col-span-3 font-extrabold text-slate-900 pl-2">3. 決策樹 <span
+                class="font-mono text-[8px] text-slate-500 block">Decision Tree</span></div>
+            <div class="col-span-2"><span
+                class="px-1 py-0.2 rounded text-[7px] bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+              <div class="text-[8.5px] mt-0.5 text-slate-500 font-semibold">樹狀規則</div>
+            </div>
+            <div class="col-span-3 text-slate-700">🏭 <b>台積電</b>：晶片良率分類檢測規則自動生成</div>
+            <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-500 h-0.5 rounded-full" style="width: 85%"></div>
+                </div>
+              </div>
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-400 h-0.5 rounded-full" style="width: 85%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-2 text-[8.5px] text-slate-600 bg-white/60 p-1.5 rounded border border-cyan-100/50">
+              欲可視化決策邏輯並產生IF-THEN規則。</div>
+          </div>
+
+          <!-- 4. Random Forest -->
+          <div class="grid grid-cols-12 gap-2 items-center text-[10px] border-t border-slate-100/50 pt-1.5">
+            <div class="col-span-3 font-extrabold text-slate-900 pl-2">4. 隨機森林 <span
+                class="font-mono text-[8px] text-slate-500 block">Random Forest</span></div>
+            <div class="col-span-2"><span
+                class="px-1 py-0.2 rounded text-[7px] bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+              <div class="text-[8.5px] mt-0.5 text-slate-500 font-semibold">整合樹投票</div>
+            </div>
+            <div class="col-span-3 text-slate-700">🏥 <b>奇美醫院</b>：急診病患轉 ICU 風險預測與特徵篩選</div>
+            <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-500 h-0.5 rounded-full" style="width: 45%"></div>
+                </div>
+              </div>
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-400 h-0.5 rounded-full" style="width: 65%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-2 text-[8.5px] text-slate-600 bg-white/60 p-1.5 rounded border border-cyan-100/50">
+              表格數據多缺失且需高精準度Baseline。</div>
+          </div>
+
+          <!-- 5. SVM -->
+          <div class="grid grid-cols-12 gap-2 items-center text-[10px] border-t border-slate-100/50 pt-1.5">
+            <div class="col-span-3 font-extrabold text-slate-900 pl-2">5. 支持向量機 <span
+                class="font-mono text-[8px] text-slate-500 block">SVM</span></div>
+            <div class="col-span-2"><span
+                class="px-1 py-0.2 rounded text-[7px] bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+              <div class="text-[8.5px] mt-0.5 text-slate-500 font-semibold">超平面分割</div>
+            </div>
+            <div class="col-span-3 text-slate-700">📶 <b>聯發科</b>：IC 測試高維度信號異常邊界判定</div>
+            <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-500 h-0.5 rounded-full" style="width: 40%"></div>
+                </div>
+              </div>
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-400 h-0.5 rounded-full" style="width: 50%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-2 text-[8.5px] text-slate-600 bg-white/60 p-1.5 rounded border border-cyan-100/50">
+              樣本數中等但特徵維度高且界線清晰。</div>
+          </div>
+
+          <!-- 6. KNN -->
+          <div class="grid grid-cols-12 gap-2 items-center text-[10px] border-t border-slate-100/50 pt-1.5">
+            <div class="col-span-3 font-extrabold text-slate-900 pl-2">6. K-近鄰演算法 <span
+                class="font-mono text-[8px] text-slate-500 block">KNN</span></div>
+            <div class="col-span-2"><span
+                class="px-1 py-0.2 rounded text-[7px] bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+              <div class="text-[8.5px] mt-0.5 text-slate-500 font-semibold">空間鄰近度</div>
+            </div>
+            <div class="col-span-3 text-slate-700">🛒 <b>momo購物</b>：同性質用戶購買商品交叉推薦</div>
+            <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-500 h-0.5 rounded-full" style="width: 70%"></div>
+                </div>
+              </div>
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-400 h-0.5 rounded-full" style="width: 40%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-2 text-[8.5px] text-slate-600 bg-white/60 p-1.5 rounded border border-cyan-100/50">
+              低維度且乾淨，可用局部相似度快速劃分。</div>
+          </div>
+
+          <!-- 7. Naive Bayes -->
+          <div class="grid grid-cols-12 gap-2 items-center text-[10px] border-t border-slate-100/50 pt-1.5">
+            <div class="col-span-3 font-extrabold text-slate-900 pl-2">7. 單純貝氏 <span
+                class="font-mono text-[8px] text-slate-500 block">Naive Bayes</span></div>
+            <div class="col-span-2"><span
+                class="px-1 py-0.2 rounded text-[7px] bg-cyan-50 text-cyan-600 border border-cyan-100">監督式</span>
+              <div class="text-[8.5px] mt-0.5 text-slate-500 font-semibold">條件機率</div>
+            </div>
+            <div class="col-span-3 text-slate-700">🛒 <b>PChome</b>：客服信件分類分流與意圖自動識別</div>
+            <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-500 h-0.5 rounded-full" style="width: 75%"></div>
+                </div>
+              </div>
+              <div class="w-full">
+                <div class="w-full bg-slate-200 h-0.5 rounded-full">
+                  <div class="bg-cyan-400 h-0.5 rounded-full" style="width: 98%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-2 text-[8.5px] text-slate-600 bg-white/60 p-1.5 rounded border border-cyan-100/50">
+              進行大規模高維度文本、字詞類別分類。</div>
+          </div>
+
+        </div>
+
+        <!-- Track 3: 資料分群層 (Clustering) -->
+        <div
+          class="bg-emerald-50/15 border-l-4 border-emerald-500 rounded-r-xl p-2.5 grid grid-cols-12 gap-2 items-center text-[10.5px]">
+          <div class="col-span-3">
+            <span
+              class="text-[8px] font-black uppercase text-emerald-600 bg-emerald-100/50 px-1.5 py-0.5 rounded">🫧 資料分群</span>
+            <div class="font-extrabold text-slate-900 mt-1">8. K-Means 分群</div>
+            <div class="text-[8.5px] text-slate-500 font-mono">K-Means Clustering</div>
+          </div>
+          <div class="col-span-2 text-slate-700">
+            <span
+              class="px-1 py-0.2 rounded text-[7px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">非監督</span>
+            <div class="mt-1 text-[9px] text-slate-500 font-semibold">質心凝聚分群</div>
+          </div>
+          <div class="col-span-3 text-slate-700">
+            🏪 <b>全家超商</b>：會員 RFM 消費行為數據分群與行銷標籤模型
+          </div>
+          <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+            <div class="w-full">
+              <div class="w-full bg-slate-200 h-1 rounded-full">
+                <div class="bg-emerald-500 h-1 rounded-full" style="width: 70%"></div>
+              </div>
+            </div>
+            <div class="w-full">
+              <div class="w-full bg-slate-200 h-1 rounded-full">
+                <div class="bg-emerald-400 h-1 rounded-full" style="width: 80%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-span-2 text-[9px] text-slate-600 bg-white/60 p-1.5 rounded border border-emerald-100/50">
+            無標籤數據，希望自動劃分相似客群或產品族群。
+          </div>
+        </div>
+
+        <!-- Track 4: 特徵降維層 (Dimensionality Reduction) -->
+        <div
+          class="bg-violet-50/15 border-l-4 border-violet-500 rounded-r-xl p-2.5 grid grid-cols-12 gap-2 items-center text-[10.5px]">
+          <div class="col-span-3">
+            <span
+              class="text-[8px] font-black uppercase text-violet-600 bg-violet-100/50 px-1.5 py-0.5 rounded">🗜️ 特徵降維</span>
+            <div class="font-extrabold text-slate-900 mt-1">9. 主成分分析</div>
+            <div class="text-[8.5px] text-slate-500 font-mono">PCA</div>
+          </div>
+          <div class="col-span-2 text-slate-700">
+            <span
+              class="px-1 py-0.2 rounded text-[7px] font-bold bg-violet-50 text-violet-600 border border-violet-100">非監督</span>
+            <div class="mt-1 text-[9px] text-slate-500 font-semibold">特徵投影壓縮</div>
+          </div>
+          <div class="col-span-3 text-slate-700">
+            🏭 <b>日月光</b>：多感測器參數高維訊號降維與 SPC 統計製程監控
+          </div>
+          <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+            <div class="w-full">
+              <div class="w-full bg-slate-200 h-1 rounded-full">
+                <div class="bg-violet-500 h-1 rounded-full" style="width: 50%"></div>
+              </div>
+            </div>
+            <div class="w-full">
+              <div class="w-full bg-slate-200 h-1 rounded-full">
+                <div class="bg-violet-400 h-1 rounded-full" style="width: 85%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-span-2 text-[9px] text-slate-600 bg-white/60 p-1.5 rounded border border-violet-100/50">
+            特徵過多產生維度災難，需壓縮特徵、去噪或視覺化。
+          </div>
+        </div>
+
+        <!-- Track 5: 複雜模式學習層 (Deep Learning) -->
+        <div
+          class="bg-orange-50/15 border-l-4 border-orange-500 rounded-r-xl p-2.5 grid grid-cols-12 gap-2 items-center text-[10.5px]">
+          <div class="col-span-3">
+            <span
+              class="text-[8px] font-black uppercase text-orange-600 bg-orange-100/50 px-1.5 py-0.5 rounded">🧠 複雜模式</span>
+            <div class="font-extrabold text-slate-900 mt-1">10. 類神經網路 / 深度學習</div>
+            <div class="text-[8.5px] text-slate-500 font-mono">Neural Networks</div>
+          </div>
+          <div class="col-span-2 text-slate-700">
+            <span
+              class="px-1 py-0.2 rounded text-[7px] font-bold bg-orange-50 text-orange-600 border border-orange-100">深度學習</span>
+            <div class="mt-1 text-[9px] text-slate-500 font-semibold">多層特徵表徵</div>
+          </div>
+          <div class="col-span-3 text-slate-700">
+            🏥 <b>長庚醫院</b>：眼底鏡醫學影像自動病變輔助分割與識別
+          </div>
+          <div class="col-span-2 flex flex-col gap-1 items-center px-1">
+            <div class="w-full">
+              <div class="w-full bg-slate-200 h-1 rounded-full">
+                <div class="bg-orange-500 h-1 rounded-full" style="width: 10%"></div>
+              </div>
+            </div>
+            <div class="w-full">
+              <div class="w-full bg-slate-200 h-1 rounded-full">
+                <div class="bg-orange-400 h-1 rounded-full" style="width: 20%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-span-2 text-[9px] text-slate-600 bg-white/60 p-1.5 rounded border border-orange-100/50">
+            處理影像、語音、長文本等非結構化數據且GPU運算充足。
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Model Selection Guide Section (Practical Quick Reference) -->
+    <div class="model-guide-section mt-4 border-t border-slate-100 pt-3 page-break-prevent">
+      <h4 class="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest text-center mb-2 font-sans">
+        ★ Model Selection Quick Guide (機器學習模型實務選擇要點) ★
+      </h4>
+      <div class="grid grid-cols-5 gap-2 text-center text-[9px]">
+
+        <div class="bg-pink-50/20 p-2 rounded-xl border border-pink-100/50">
+          <div class="font-bold text-pink-600 uppercase text-[7px]">📈 數值預測</div>
+          <div class="font-extrabold text-slate-800 mt-0.5">線性回歸</div>
+          <div class="text-[7.5px] text-slate-500 mt-0.5">中古屋估價、銷量預測</div>
+        </div>
+
+        <div class="bg-cyan-50/20 p-2 rounded-xl border border-cyan-100/50">
+          <div class="font-bold text-cyan-600 uppercase text-[7px]">🎯 可解釋二分類</div>
+          <div class="font-extrabold text-slate-800 mt-0.5">邏輯回歸 / 決策樹</div>
+          <div class="text-[7.5px] text-slate-500 mt-0.5">信用卡盜刷、晶圓良率檢測規則</div>
+        </div>
+
+        <div class="bg-cyan-50/20 p-2 rounded-xl border border-cyan-100/50">
+          <div class="font-bold text-cyan-600 uppercase text-[7px]">🎯 高維/多分類</div>
+          <div class="font-extrabold text-slate-800 mt-0.5">隨機森林 / SVM / KNN / 貝氏</div>
+          <div class="text-[7.5px] text-slate-500 mt-0.5">急診轉ICU預警、相似商品推薦</div>
+        </div>
+
+        <div class="bg-emerald-50/20 p-2 rounded-xl border border-emerald-100/50">
+          <div class="font-bold text-emerald-600 uppercase text-[7px]">🫧 數據自動分群</div>
+          <div class="font-extrabold text-slate-800 mt-0.5">K-Means 分群</div>
+          <div class="text-[7.5px] text-slate-500 mt-0.5">會員 RFM 消費畫像分群與定位</div>
+        </div>
+
+        <div class="bg-purple-50/20 p-2 rounded-xl border border-purple-100/50">
+          <div class="font-bold text-violet-600 uppercase text-[7px]">🗜️ 降維 / 🧠 深度</div>
+          <div class="font-extrabold text-slate-800 mt-0.5">PCA 降維 / 深度學習</div>
+          <div class="text-[7.5px] text-slate-500 mt-0.5">封裝SPC監控、眼底病變影像判讀</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tips Footer Panel -->
+    <div
+      class="tips-footer-section mt-3 border-t border-slate-100 pt-2.5 flex flex-col items-center justify-center text-[9px] text-slate-400 gap-1 text-center page-break-prevent">
+      <div class="flex items-center justify-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
+        <b>整合認知：</b>台灣業界講求「數據可解釋性」與「高度穩定」，因此常以回歸模型建立基礎再結合模型與深度學習提升最大效用。
+      </div>
+      <div class="text-[8px] text-slate-400 italic font-medium">
+        ⚠️ 本內容為機器學習選擇指南之初步嘗試，尚有諸多優化和改善空間。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle active view between Concept A (Flow View) and Concept B (Compare View)
+    function switchView(viewType) {
+      const flowView = document.getElementById('flow-view');
+      const compareView = document.getElementById('compare-view');
+      const btnFlow = document.getElementById('btn-flow');
+      const btnCompare = document.getElementById('btn-compare');
+
+      if (viewType === 'flow') {
+        flowView.classList.remove('hidden');
+        compareView.classList.add('hidden');
+
+        btnFlow.classList.remove('text-slate-600', 'hover:text-slate-900');
+        btnFlow.classList.add('text-white', 'bg-slate-900', 'shadow-sm');
+
+        btnCompare.classList.remove('text-white', 'bg-slate-900', 'shadow-sm');
+        btnCompare.classList.add('text-slate-600', 'hover:text-slate-900');
+      } else {
+        flowView.classList.add('hidden');
+        compareView.classList.remove('hidden');
+
+        btnCompare.classList.remove('text-slate-600', 'hover:text-slate-900');
+        btnCompare.classList.add('text-white', 'bg-slate-900', 'shadow-sm');
+
+        btnFlow.classList.remove('text-white', 'bg-slate-900', 'shadow-sm');
+        btnFlow.classList.add('text-slate-600', 'hover:text-slate-900');
+      }
+    }
+
+    // Dynamic model path and card highlights
+    function highlightModel(modelId) {
+      // Clear previous glows/highlights
+      const cards = document.querySelectorAll('[id^="card-"]');
+      cards.forEach(card => {
+        card.classList.remove('glow-pink', 'glow-cyan', 'glow-green', 'glow-purple', 'glow-orange', 'border-slate-400', 'scale-[1.02]');
+      });
+
+      const svgPaths = document.querySelectorAll('#flow-svg path');
+      svgPaths.forEach(path => {
+        path.setAttribute('stroke-width', path.id.includes('sub') ? '1.5' : '2.5');
+        path.setAttribute('stroke-opacity', '1');
+      });
+
+      // Apply highlights based on model ID
+      const card = document.getElementById('card-' + modelId);
+      if (card) {
+        let colorClass = 'glow-cyan';
+        if (['lr'].includes(modelId)) colorClass = 'glow-pink';
+        if (['kmeans'].includes(modelId)) colorClass = 'glow-green';
+        if (['pca'].includes(modelId)) colorClass = 'glow-purple';
+        if (['nn'].includes(modelId)) colorClass = 'glow-orange';
+
+        card.classList.add(colorClass, 'scale-[1.02]');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // Modify matching SVG line weight for visual tracking
+      if (modelId === 'lr') {
+        const path = document.getElementById('path-1');
+        if (path) path.setAttribute('stroke-width', '5');
+      } else if (modelId === 'kmeans') {
+        const path = document.getElementById('path-3');
+        if (path) path.setAttribute('stroke-width', '5');
+      } else if (modelId === 'pca') {
+        const path = document.getElementById('path-4');
+        if (path) path.setAttribute('stroke-width', '5');
+      } else if (modelId === 'nn') {
+        const path = document.getElementById('path-5');
+        if (path) path.setAttribute('stroke-width', '5');
+      } else {
+        // Classifiers
+        const pathMain = document.getElementById('path-2');
+        if (pathMain) pathMain.setAttribute('stroke-width', '4');
+
+        let subPathId = '';
+        if (modelId === 'logr') subPathId = 'path-sub-2-1';
+        if (modelId === 'dt') subPathId = 'path-sub-2-2';
+        if (modelId === 'rf') subPathId = 'path-sub-2-3';
+        if (modelId === 'svm') subPathId = 'path-sub-2-4';
+        if (modelId === 'knn') subPathId = 'path-sub-2-5';
+        if (modelId === 'nb') subPathId = 'path-sub-2-6';
+
+        const pathSub = document.getElementById(subPathId);
+        if (pathSub) pathSub.setAttribute('stroke-width', '4.5');
+      }
+    }
+  </script>
+</body>
+
+</html>
